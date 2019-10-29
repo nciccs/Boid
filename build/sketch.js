@@ -1,5 +1,5 @@
 var boids = [];
-var NUM_BOIDS = 200;
+var NUM_BOIDS = 100;
 
 class Boid
 {
@@ -11,15 +11,15 @@ class Boid
         this.acceleration = createVector(0, 0);
         this.r = 8.0;
 
-        this.separationDistance = 13;
-        this.alignmentDistance = 25;
-        this.cohesionDistance = 25;
+        this.separationDistance = 16;
+        //this.alignmentDistance = 25;
+        //this.cohesionDistance = 25;
         //this.separationDistance = 25;
-        //this.alignmentDistance = 50;
-        //this.cohesionDistance = 50;
+        this.alignmentDistance = 50;
+        this.cohesionDistance = 50;
 
         this.maxSpeed = 3;
-        this.maxForce = 0.05;
+        this.maxForce = 0.03;
     }
 
     run(boids)
@@ -36,7 +36,7 @@ class Boid
         let ali = this.alignment(boids);
         let coh = this.cohesion(boids);
 
-        //coh.mult(5);
+        sep.mult(1.5);
 
         this.acceleration.add(sep);
         this.acceleration.add(ali);
@@ -49,10 +49,10 @@ class Boid
         let count = 0;
         for(let i = 0; i < boids.length; i++)
         {
-            let d = p5.Vector.dist(this.position, boids[i].position);
-            //let d = p5.Vector.sub(this.position, boids[i].position).magSq();
-            if(0 < d && d < this.separationDistance)
-            //if(0 < d && d < this.separationDistance*this.separationDistance)
+            //let d = p5.Vector.dist(this.position, boids[i].position);
+            let d = p5.Vector.sub(this.position, boids[i].position).magSq();
+            //if(0 < d && d < this.separationDistance)
+            if(0 < d && d < this.separationDistance*this.separationDistance)
             {
                 let diff = p5.Vector.sub(this.position, boids[i].position);
                 diff.normalize();
@@ -86,7 +86,7 @@ class Boid
         {
             //alert("here");
             //let d = p5.Vector.dist(this.position, boids[i].position);
-            let d = p5.Vector.sub(this.position, boids[i].position).magSq()
+            let d = p5.Vector.sub(this.position, boids[i].position).magSq();
             //if(0 < d && d < this.alignmentDistance)
             if(0 < d && d < this.alignmentDistance*this.alignmentDistance)
             {
@@ -115,10 +115,10 @@ class Boid
         let count = 0;
         for(let i = 0; i < boids.length; i++)
         {
-            let d = p5.Vector.dist(this.position, boids[i].position);
-            //let d = p5.Vector.sub(this.position, boids[i].position).magSq();
-            if(0 < d && d < this.separationDistance)
-            //if(0 < d && d < this.separationDistance*this.cohesionDistance)
+            //let d = p5.Vector.dist(this.position, boids[i].position);
+            let d = p5.Vector.sub(this.position, boids[i].position).magSq();
+            //if(0 < d && d < this.separationDistance)
+            if(0 < d && d < this.cohesionDistance*this.cohesionDistance)
             {
                 steer.add(boids[i].position);
                 count++;
@@ -128,10 +128,8 @@ class Boid
         if(count > 0)
         {
             steer.div(count);
-        }
 
-        if(steer.magSq() > 0)
-        {
+            steer.sub(this.position);
             steer.normalize();
             steer.mult(this.maxSpeed);
             steer.sub(this.velocity);
@@ -180,19 +178,39 @@ class Boid
     }
 }
 
+function createBoids(numBoids)
+{
+    boids = [];
+    for(let i = 0; i < numBoids; i++)
+    {
+        //boids.push(new Boid(width/2, height/2));
+        boids.push(new Boid(random(0, width), random(0, height)));
+    }
+}
+
 function setup()
 {
     // put setup code here
-    //createCanvas(640, 480);
-    createCanvas(480, 360);
+    createCanvas(640, 480);
+    //createCanvas(480, 360);
     //createCanvas(300, 300);
     frameRate(60);
 
-    for(let i = 0; i < NUM_BOIDS; i++)
+    slider = createSlider(NUM_BOIDS, 600, NUM_BOIDS);
+    slider.position(110, 30);
+    slider.attribute('onchange', 'updateSlider()');
+    //slider.style('opacity', 0.6);
+    createBoids(slider.value());
+    /*for(let i = 0; i < NUM_BOIDS; i++)
     {
         boids.push(new Boid(width/2, height/2));
         //boids.push(new Boid(random(0, width), random(0, height)));
-    }
+    }*/
+}
+
+function updateSlider()
+{
+    createBoids(slider.value());
 }
 
 function draw()
@@ -203,4 +221,13 @@ function draw()
     {
         boids[i].run(boids);
     }
+
+    let fps = frameRate();
+    push();
+    textSize(20);
+    fill("RED");
+    stroke("RED");
+    let output = "FPS: " + fps.toFixed(2) + '\n' + "Boids: " + boids.length;
+    text(output, 10, 25);
+    pop();
 }
