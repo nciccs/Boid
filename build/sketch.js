@@ -231,7 +231,7 @@ function setup()
     let numBoids = 200;
     let maxBoids = 1000;
 
-    sliders["numBoids"] = newSlider(width, 30, numBoids, maxBoids, numBoids, 1, "updateBoidsSlider()");
+    sliders["numBoids"] = newSlider(width, 30, 1, maxBoids, numBoids, 1, "updateBoidsSlider()");
 
     sliders["separationDistance"] = newSlider(width, 60, 0, width, 20, 1, "updateSlider()");
     sliders["alignmentDistance"] = newSlider(width, 90, 0, width, 50, 1, "updateSlider()");
