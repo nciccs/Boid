@@ -16,6 +16,10 @@ class Boid
         this.separationForce = 0.03;
         this.alignmentForce = 0.03;
         this.cohesionForce = 0.03;
+
+        this.seperationWeight = 1;
+        this.alignmentWeight = 1;
+        this.cohesionWeight = 1;
     }
 
     run(boids)
@@ -32,7 +36,9 @@ class Boid
         let ali = this.alignment(boids);
         let coh = this.cohesion(boids);
 
-        //sep.mult(1.5);
+        sep.mult(this.seperationWeight);
+        ali.mult(this.alignmentWeight);
+        coh.mult(this.cohesionWeight);
 
         this.acceleration.add(sep);
         this.acceleration.add(ali);
@@ -67,6 +73,7 @@ class Boid
         {
             steer.normalize();
             steer.mult(this.maxSpeed);
+
             steer.sub(this.velocity);
             steer.limit(this.separationForce);
         }
@@ -93,8 +100,10 @@ class Boid
         if(count > 0)
         {
             steer.div(count);
+
             steer.normalize();
             steer.mult(this.maxSpeed);
+
             steer.sub(this.velocity);
             steer.limit(this.alignmentForce);
         }
@@ -123,8 +132,10 @@ class Boid
             steer.div(count);
 
             steer.sub(this.position);
+
             steer.normalize();
             steer.mult(this.maxSpeed);
+
             steer.sub(this.velocity);
             steer.limit(this.cohesionForce);
         }
@@ -190,15 +201,15 @@ function createBoids()
         let boid = new Boid(random(0, width), random(0, height));
         boids.push(boid);
 
-        boid.separationDistance = sliders["separationDistanceSlider"].value();       
-        boid.alignmentDistance = sliders["alignmentDistanceSlider"].value();
-        boid.cohesionDistance = sliders["cohesionDistanceSlider"].value();
+        boid.separationDistance = sliders["separationDistance"].value();       
+        boid.alignmentDistance = sliders["alignmentDistance"].value();
+        boid.cohesionDistance = sliders["cohesionDistance"].value();
 
-        boid.maxSpeed = sliders["maxSpeedSlider"].value();
+        boid.maxSpeed = sliders["maxSpeed"].value();
 
-        boid.separationForce = sliders["separationForceSlider"].value();
-        boid.alignmentForce = sliders["alignmentForceSlider"].value();
-        boid.cohesionForce = sliders["cohesionForceSlider"].value();
+        boid.separationForce = sliders["separationForce"].value();
+        boid.alignmentForce = sliders["alignmentForce"].value();
+        boid.cohesionForce = sliders["cohesionForce"].value();
     }
 }
 
@@ -217,20 +228,24 @@ function setup()
     //createCanvas(1024, 768);
     frameRate(60);
 
-    let numBoids = 100;
+    let numBoids = 200;
     let maxBoids = 1000;
 
     sliders["numBoids"] = newSlider(width, 30, numBoids, maxBoids, numBoids, 1, "updateBoidsSlider()");
 
-    sliders["separationDistanceSlider"] = newSlider(width, 60, 0, width, 20, 1, "updateSlider()");
-    sliders["alignmentDistanceSlider"] = newSlider(width, 90, 0, width, 50, 1, "updateSlider()");
-    sliders["cohesionDistanceSlider"] = newSlider(width, 120, 0, width, 50, 1, "updateSlider()");
+    sliders["separationDistance"] = newSlider(width, 60, 0, width, 20, 1, "updateSlider()");
+    sliders["alignmentDistance"] = newSlider(width, 90, 0, width, 50, 1, "updateSlider()");
+    sliders["cohesionDistance"] = newSlider(width, 120, 0, width, 50, 1, "updateSlider()");
 
-    sliders["maxSpeedSlider"] = newSlider(width, 150, 0, 5, 2, 1, "updateSlider()");
+    sliders["maxSpeed"] = newSlider(width, 150, 0, 5, 2, 1, "updateSlider()");
 
-    sliders["separationForceSlider"] = newSlider(width, 180, 0, 5, 0.03, 0.001, "updateSlider()");
-    sliders["alignmentForceSlider"] = newSlider(width, 210, 0, 5, 0.03, 0.001, "updateSlider()");
-    sliders["cohesionForceSlider"] = newSlider(width, 240, 0, 5, 0.03, 0.001, "updateSlider()");
+    sliders["separationForce"] = newSlider(width, 180, 0, 5, 0.03, 0.001, "updateSlider()");
+    sliders["alignmentForce"] = newSlider(width, 210, 0, 5, 0.03, 0.0001, "updateSlider()");
+    sliders["cohesionForce"] = newSlider(width, 240, 0, 5, 0.03, 0.0001, "updateSlider()");
+
+    sliders["seperationWeight"] = newSlider(width, 270, 0, 5, 1, 0.1, "updateSlider()");
+    sliders["alignmentWeight"] = newSlider(width, 300, 0, 5, 1, 0.1, "updateSlider()");
+    sliders["cohesionWeight"] = newSlider(width, 330, 0, 5, 1, 0.1, "updateSlider()");
 
     createBoids();
 
@@ -241,15 +256,19 @@ function setup()
 
     labels["numBoids"] = newLabel(labelXAt, 30);
 
-    labels["separationDistanceSlider"] = newLabel(labelXAt, 60);
-    labels["alignmentDistanceSlider"] = newLabel(labelXAt, 90);
-    labels["cohesionDistanceSlider"] = newLabel(labelXAt, 120);
+    labels["separationDistance"] = newLabel(labelXAt, 60);
+    labels["alignmentDistance"] = newLabel(labelXAt, 90);
+    labels["cohesionDistance"] = newLabel(labelXAt, 120);
 
-    labels["maxSpeedSlider"] = newLabel(labelXAt, 150);
+    labels["maxSpeed"] = newLabel(labelXAt, 150);
 
-    labels["separationForceSlider"] = newLabel(labelXAt, 180);
-    labels["alignmentForceSlider"] = newLabel(labelXAt, 210);
-    labels["cohesionForceSlider"] = newLabel(labelXAt, 240);
+    labels["separationForce"] = newLabel(labelXAt, 180);
+    labels["alignmentForce"] = newLabel(labelXAt, 210);
+    labels["cohesionForce"] = newLabel(labelXAt, 240);
+
+    labels["seperationWeight"] = newLabel(labelXAt, 270);
+    labels["alignmentWeight"] = newLabel(labelXAt, 300);
+    labels["cohesionWeight"] = newLabel(labelXAt, 330);
 }
 
 function updateBoidsSlider()
@@ -261,15 +280,19 @@ function updateSlider()
 {
     for(let i = 0; i < boids.length; i++)
     {
-        boids[i].separationDistance = sliders["separationDistanceSlider"].value();       
-        boids[i].alignmentDistance = sliders["alignmentDistanceSlider"].value();
-        boids[i].cohesionDistance = sliders["cohesionDistanceSlider"].value();
+        boids[i].separationDistance = sliders["separationDistance"].value();       
+        boids[i].alignmentDistance = sliders["alignmentDistance"].value();
+        boids[i].cohesionDistance = sliders["cohesionDistance"].value();
 
-        boids[i].maxSpeed = sliders["maxSpeedSlider"].value();
+        boids[i].maxSpeed = sliders["maxSpeed"].value();
 
-        boids[i].separationForce = sliders["separationForceSlider"].value();
-        boids[i].alignmentForce = sliders["alignmentForceSlider"].value();
-        boids[i].cohesionForce = sliders["cohesionForceSlider"].value();
+        boids[i].separationForce = sliders["separationForce"].value();
+        boids[i].alignmentForce = sliders["alignmentForce"].value();
+        boids[i].cohesionForce = sliders["cohesionForce"].value();
+
+        boids[i].seperationWeight = sliders["seperationWeight"].value();
+        boids[i].alignmentWeight = sliders["alignmentWeight"].value();
+        boids[i].cohesionWeight = sliders["cohesionWeight"].value();
     }
 }
 
@@ -286,13 +309,17 @@ function draw()
 
     labels["numBoids"].html("numBoids: " + sliders["numBoids"].value());
 
-    labels["separationDistanceSlider"].html("separationDistanceSlider: " + sliders["separationDistanceSlider"].value());
-    labels["alignmentDistanceSlider"].html("alignmentDistanceSlider: " + sliders["alignmentDistanceSlider"].value());
-    labels["cohesionDistanceSlider"].html("cohesionDistanceSlider: " + sliders["cohesionDistanceSlider"].value());
+    labels["separationDistance"].html("separationDistance: " + sliders["separationDistance"].value());
+    labels["alignmentDistance"].html("alignmentDistance: " + sliders["alignmentDistance"].value());
+    labels["cohesionDistance"].html("cohesionDistance: " + sliders["cohesionDistance"].value());
 
-    labels["maxSpeedSlider"].html("maxSpeedSlider: " + sliders["maxSpeedSlider"].value());
+    labels["maxSpeed"].html("maxSpeedSlider: " + sliders["maxSpeed"].value());
 
-    labels["separationForceSlider"].html("separationForceSlider: " + sliders["separationForceSlider"].value().toFixed(2));
-    labels["alignmentForceSlider"].html("alignmentForceSlider: " + sliders["alignmentForceSlider"].value().toFixed(2));
-    labels["cohesionForceSlider"].html("cohesionForceSlider: " + sliders["cohesionForceSlider"].value().toFixed(2));
+    labels["separationForce"].html("separationForce: " + sliders["separationForce"].value().toFixed(2));
+    labels["alignmentForce"].html("alignmentForce: " + sliders["alignmentForce"].value().toFixed(2));
+    labels["cohesionForce"].html("cohesionForce: " + sliders["cohesionForce"].value().toFixed(2));
+
+    labels["seperationWeight"].html("seperationWeight: " + sliders["seperationWeight"].value().toFixed(2));
+    labels["alignmentWeight"].html("alignmentWeight: " + sliders["alignmentWeight"].value().toFixed(2));
+    labels["cohesionWeight"].html("cohesionWeight: " + sliders["cohesionWeight"].value().toFixed(2));
 }
